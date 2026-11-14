@@ -1,0 +1,343 @@
+--- a/Tela-main/tela/tela_extension.py
++++ b/Tela-main/tela/tela_extension.py
+@@ -24,8 +24,8 @@
+ import zipfile
+ # Krita Module
+ from krita import *
+-# PyQt5 Modules
+-from PyQt5 import QtWidgets, QtCore, QtGui, uic
++# PyQt6 Modules
++from PyQt6 import QtWidgets, QtCore, QtGui, uic
+ # Modules
+ from .tela_modulo import *
+ 
+@@ -71,7 +71,7 @@
+         # Operating System
+         self.OS = str( QSysInfo.kernelType() ) # WINDOWS=winnt & LINUX=linux
+         if self.OS == "winnt": # Unlocks icons in Krita for Menu Mode
+-            QApplication.setAttribute( Qt.AA_DontShowIconsInMenus, False )
++            QApplication.setAttribute( Qt.ApplicationAttribute.AA_DontShowIconsInMenus, False )
+         # Path Name
+         self.directory_plugin = str( os.path.dirname( os.path.realpath( __file__ ) ) )
+         # Information
+@@ -832,10 +832,10 @@
+         qsize = QSize( pw, ph )
+         # QWidget
+         button.setObjectName( name )
+-        button.setSizePolicy( QSizePolicy.Fixed, QSizePolicy.Fixed )
++        button.setSizePolicy( QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed )
+         button.setMinimumSize( qsize )
+         button.setMaximumSize( qsize )
+-        button.setFocusPolicy( Qt.NoFocus )
++        button.setFocusPolicy( Qt.FocusPolicy.NoFocus )
+         # QAbstract Button
+         button.setText( "" )
+         button.setCheckable( check )
+@@ -847,18 +847,18 @@
+         qsize = QSize( pw, ph )
+         # QWidget
+         progress.setObjectName( name )
+-        progress.setSizePolicy( QSizePolicy.Fixed, QSizePolicy.Fixed )
++        progress.setSizePolicy( QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed )
+         progress.setMinimumSize( qsize )
+         progress.setMaximumSize( qsize )
+-        progress.setFocusPolicy( Qt.NoFocus )
++        progress.setFocusPolicy( Qt.FocusPolicy.NoFocus )
+         # QProgress Bar
+         progress.setMinimum( 0 )
+         progress.setMaximum( 99 )
+         progress.setValue( 0 )
+         progress.setTextVisible( False )
+     def Interface_Slider( self, slider ):
+-        slider.setOrientation( Qt.Horizontal )
+-        slider.setTickPosition( QSlider.TicksBelow )
++        slider.setOrientation( Qt.Orientation.Horizontal )
++        slider.setTickPosition( QSlider.TickPosition.TicksBelow )
+     # Theme
+     def Theme_Highlight( self, button, name, background, pen ):
+         button.setStyleSheet( "#" + str( name ) + "::checked{ background-color : " + str( background ) + ";}" )
+@@ -1478,7 +1478,7 @@
+         qpoint = widget.geometry().topLeft()
+         pos = self.qmdiarea.mapToGlobal( qpoint )
+         point = QPoint( pos.x(), pos.y() - height )
+-        action = self.qmenu.exec_( point )
++        action = self.qmenu.exec( point )
+ 
+         # State
+         if action == action_view_canvas_ui:             self.View_Canvas_UI()
+@@ -1536,7 +1536,7 @@
+         qpoint = widget.geometry().topLeft()
+         pos = self.qmdiarea.mapToGlobal( qpoint )
+         point = QPoint( pos.x(), pos.y() - height )
+-        action = self.qmenu.exec_( point )
++        action = self.qmenu.exec( point )
+         # Action
+         if action == action_show_animation: self.Show_Animation( not self.show_animation )
+         if action == action_show_option:    self.Show_Option( not self.show_option )
+@@ -1691,7 +1691,7 @@
+         qpoint = widget.geometry().topLeft()
+         pos = self.qmdiarea.mapToGlobal( qpoint )
+         point = QPoint( pos.x(), pos.y() - height )
+-        action = self.qmenu.exec_( point )
++        action = self.qmenu.exec( point )
+ 
+         # Pin
+         if action in action_menu:
+@@ -1796,7 +1796,7 @@
+     def qicon_to_data( self, qicon ):
+         size = 24
+         pixmap = qicon.pixmap( size, size )
+-        image = pixmap.toImage().convertToFormat( QImage.Format_RGBA8888 )
++        image = pixmap.toImage().convertToFormat( QImage.Format.Format_RGBA8888 )
+         data = image.bits().asstring( image.sizeInBytes() )
+         return data
+ 
+@@ -1831,7 +1831,7 @@
+         px = pos.x() - 100
+         py = pos.y() - len_item * self.mi - self.shelf_margin
+         qpoint = QPoint( px, py )
+-        action = self.qmenu.exec_( qpoint )
++        action = self.qmenu.exec( qpoint )
+         # Trigger Action
+         for i in range( 0, len( list_shelf ) ):
+             action_i = list_shelf[i]
+@@ -1998,7 +1998,7 @@
+         px = pos.x() - 100
+         py = pos.y() - len_item * self.mi - self.shelf_margin
+         qpoint = QPoint( px, py )
+-        action = self.qmenu.exec_( qpoint )
++        action = self.qmenu.exec( qpoint )
+         # Select Preset
+         for i in range( 0, len( list_shelf ) ):
+             action_i = list_shelf[i]
+@@ -2867,8 +2867,8 @@
+         self.Menu_Reset()
+         check_canvas = self.Check_Canvas()
+         if check_canvas == True:
+-            boolean = QMessageBox.question( None, "TELA", f"Mirror Fix Selected Layer(s) ?\nSource = { SIGNAL_SIDE }", QMessageBox.Yes, QMessageBox.No )
+-            if ( boolean == QMessageBox.Yes and SIGNAL_SIDE != None ):
++            boolean = QMessageBox.question( None, "TELA", f"Mirror Fix Selected Layer(s) ?\nSource = { SIGNAL_SIDE }", QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No )
++            if ( boolean == QMessageBox.StandardButton.Yes and SIGNAL_SIDE != None ):
+                 self.MirrorFix_Run( SIGNAL_SIDE )
+     def MirrorFix_Run( self, side ):
+         check_canvas = self.Check_Canvas()
+@@ -3052,7 +3052,7 @@
+         # QImage
+         qimage_thumbnail = ad.thumbnail( adw, adh )
+         qimage_selection = qimage_thumbnail.copy( int( px ), int( py ), int( pw ), int( ph ) )
+-        mode = Qt.SmoothTransformation
++        mode = Qt.TransformationMode.SmoothTransformation
+         if ( self.export_width_state == True and self.export_height_state == False ):
+             qimage_scale = qimage_selection.scaledToWidth( int( self.export_width_value ), mode )
+         elif ( self.export_width_state == False and self.export_height_state == True ):
+@@ -3117,16 +3117,16 @@
+         et = event.type()
+         # Geometry ( resize )
+         if self.qmdiarea != None:
+-            if ( event.type() == QEvent.Resize and source == self.qmdiarea ):
++            if ( event.type() == QEvent.Type.Resize and source == self.qmdiarea ):
+                 self.Size_Update()
+         # Krita ToolBox Signals
+-        if ( et in [ QEvent.MouseButtonPress, QEvent.MouseButtonRelease, QEvent.PaletteChange ] and source in self.krita_toolbox ):
++        if ( et in [ QEvent.Type.MouseButtonPress, QEvent.Type.MouseButtonRelease, QEvent.Type.PaletteChange ] and source in self.krita_toolbox ):
+             self.Tool_Update()
+         # Eraser
+         if ( et in [ 24, 12, 184 ] ) and ( source == self.krita_eraser ):
+             self.Tool_Eraser( self.krita_eraser.isChecked() )
+         # Color Picker
+-        if ( et == QEvent.Enter and source == self.ui_color_picker ):
++        if ( et == QEvent.Type.Enter and source == self.ui_color_picker ):
+             self.Color_READ()
+             return True
+         return super().eventFilter( source, event )
+@@ -3215,7 +3215,7 @@
+     """
+ 
+     """
+-    # self.setWindowFlags( QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint )
++    # self.setWindowFlags( QtCore.Qt.WindowType.FramelessWindowHint | QtCore.Qt.WindowType.WindowStaysOnTopHint )
+     """
+ 
+     """
+--- a/Tela-main/tela/tela_modulo.py
++++ b/Tela-main/tela/tela_modulo.py
+@@ -20,8 +20,8 @@
+ import math
+ # Krita
+ from krita import *
+-# PyQt5
+-from PyQt5 import QtWidgets, QtCore, QtGui, uic
++# PyQt6
++from PyQt6 import QtWidgets, QtCore, QtGui, uic
+ 
+ #endregion
+ 
+@@ -43,17 +43,17 @@
+     # Mouse Events
+     def mousePressEvent( self, event ):
+         # Read
+-        self.origin_x = event.x()
+-        self.origin_y = event.y()
++        self.origin_x = event.position().toPoint().x()
++        self.origin_y = event.position().toPoint().y()
+ 
+         # Neutral
+-        if ( event.modifiers() == QtCore.Qt.NoModifier and event.buttons() == QtCore.Qt.LeftButton ):
++        if ( event.modifiers() == QtCore.Qt.KeyboardModifier.NoModifier and event.buttons() == QtCore.Qt.MouseButton.LeftButton ):
+             self.Cursor_Side( event )
+     def mouseMoveEvent( self, event ):
+-        if ( event.modifiers() == QtCore.Qt.NoModifier and event.buttons() == QtCore.Qt.LeftButton ):
++        if ( event.modifiers() == QtCore.Qt.KeyboardModifier.NoModifier and event.buttons() == QtCore.Qt.MouseButton.LeftButton ):
+             self.Cursor_Side( event )
+     def mouseDoubleClickEvent( self, event ):
+-        if ( event.modifiers() == QtCore.Qt.NoModifier and event.buttons() == QtCore.Qt.LeftButton ):
++        if ( event.modifiers() == QtCore.Qt.KeyboardModifier.NoModifier and event.buttons() == QtCore.Qt.MouseButton.LeftButton ):
+             self.Cursor_Side( event )
+     def mouseReleaseEvent( self, event ):
+         # Emite
+@@ -69,8 +69,8 @@
+     # Mouse Operation
+     def Cursor_Side( self, event ):
+         # Read
+-        ex = event.x()
+-        ey = event.y()
++        ex = event.position().toPoint().x()
++        ey = event.position().toPoint().y()
+ 
+         # Calculations
+         delta_x = ex - self.origin_x
+@@ -130,8 +130,8 @@
+     # Paint Style
+     def paintEvent( self, event ):
+         painter = QPainter( self )
+-        painter.setRenderHint( QtGui.QPainter.Antialiasing, True )
+-        painter.setPen( QtCore.Qt.NoPen )
++        painter.setRenderHint( QtGui.QPainter.RenderHint.Antialiasing, True )
++        painter.setPen( QtCore.Qt.PenStyle.NoPen )
+         painter.setBrush( QBrush( self.hex6 ) )
+         painter.drawRect( 0, 0, int( self.ww ), int( self.hh ) )
+         painter.end()
+@@ -223,24 +223,24 @@
+     # Mouse Interaction
+     def mousePressEvent( self, event ):
+         # Read
+-        ex = event.x()
+-        ey = event.y()
++        ex = event.position().toPoint().x()
++        ey = event.position().toPoint().y()
+         self.origin_x = ex
+         self.origin_y = ey
+         self.origin_hue = self.s1
+         # Interaction
+-        if ( event.modifiers() == QtCore.Qt.ControlModifier and event.buttons() == QtCore.Qt.LeftButton ):
++        if ( event.modifiers() == QtCore.Qt.KeyboardModifier.ControlModifier and event.buttons() == QtCore.Qt.MouseButton.LeftButton ):
+             self.hue_circle = True
+             self.operation = "color_1"
+-        if ( event.modifiers() == QtCore.Qt.NoModifier and event.buttons() == QtCore.Qt.LeftButton ):
++        if ( event.modifiers() == QtCore.Qt.KeyboardModifier.NoModifier and event.buttons() == QtCore.Qt.MouseButton.LeftButton ):
+             self.hue_circle = False
+             self.operation = "color_23"
+             self.Color_23( ex, ey, False )
+         self.update()
+     def mouseMoveEvent( self, event ):
+         # Read
+-        ex = event.x()
+-        ey = event.y()
++        ex = event.position().toPoint().x()
++        ey = event.position().toPoint().y()
+         # Operation
+         if self.operation == "color_1":
+             self.Color_1( ex, ey, False )
+@@ -249,8 +249,8 @@
+         self.update()
+     def mouseReleaseEvent( self, event ):
+         # Read
+-        ex = event.x()
+-        ey = event.y()
++        ex = event.position().toPoint().x()
++        ey = event.position().toPoint().y()
+         # Operation
+         if self.operation == "color_1":
+             self.Color_1( ex, ey, True )
+@@ -287,21 +287,21 @@
+ 
+         # Start Painter
+         painter = QPainter( self )
+-        painter.setRenderHint( QtGui.QPainter.Antialiasing, True )
++        painter.setRenderHint( QtGui.QPainter.RenderHint.Antialiasing, True )
+ 
+         # Draw Gradient
+         if len( self.qpixmap_list ) > 0:
+-            painter.setPen( QtCore.Qt.NoPen )
+-            painter.setBrush( QtCore.Qt.NoBrush )
++            painter.setPen( QtCore.Qt.PenStyle.NoPen )
++            painter.setBrush( QtCore.Qt.BrushStyle.NoBrush )
+             qpixmap = self.qpixmap_list[hue_index]
+             if qpixmap.isNull() == False:
+-                render = qpixmap.scaled( self.ww, self.hh, QtCore.Qt.IgnoreAspectRatio, QtCore.Qt.FastTransformation )
++                render = qpixmap.scaled( self.ww, self.hh, QtCore.Qt.AspectRatioMode.IgnoreAspectRatio, QtCore.Qt.TransformationMode.FastTransformation )
+                 painter.drawPixmap( 0, 0, render )
+ 
+         # Draw Colors
+         if self.hue_circle == True:
+             # Background
+-            painter.setPen( QtCore.Qt.NoPen )
++            painter.setPen( QtCore.Qt.PenStyle.NoPen )
+             painter.setBrush( QBrush( self.color_alpha ) )
+             painter.drawRect( 0, 0, int( self.ww ), int( self.hh ) )
+ 
+@@ -320,13 +320,13 @@
+             px, py = self.Trig_2D_Angle_Circle( self.w2, self.h2, side, radius, hue_index )
+ 
+             # Dark Border
+-            painter.setPen( QtCore.Qt.NoPen )
++            painter.setPen( QtCore.Qt.PenStyle.NoPen )
+             painter.setBrush( QBrush( self.color_theme ) )
+             painter.drawPath( circle_02 )
+ 
+             # Light Line
+-            painter.setPen( QPen( self.color_1, line_width, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin ) )
+-            painter.setBrush( QtCore.Qt.NoBrush )
++            painter.setPen( QPen( self.color_1, line_width, Qt.PenStyle.SolidLine, Qt.PenCapStyle.SquareCap, Qt.PenJoinStyle.MiterJoin ) )
++            painter.setBrush( QtCore.Qt.BrushStyle.NoBrush )
+             line_gray = QPainterPath()
+             line_gray.moveTo( int( self.w2 ), int( self.h2 ) )
+             line_gray.lineTo( int( px ), int( py ) )
+@@ -334,7 +334,7 @@
+             painter.drawPath( line_gray )
+ 
+             # Hue Gradient
+-            painter.setPen( QtCore.Qt.NoPen )
++            painter.setPen( QtCore.Qt.PenStyle.NoPen )
+             d = 255
+             hue = QConicalGradient( QPoint( int( self.w2 ), int( self.h2 ) ), 180 )
+             hue.setColorAt( 0.000, QColor( int( self.colors[0][0] * d ), int( self.colors[0][1] * d ), int( self.colors[0][2] * d ) ) ) # RED
+@@ -348,8 +348,8 @@
+             painter.setClipPath( circle_01 )
+             painter.drawRect( 0, 0, int( self.ww ), int( self.hh ) )
+             # Dark Line over Hue
+-            painter.setPen( QPen( self.color_theme, line_width, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin ) )
+-            painter.setBrush( QtCore.Qt.NoBrush )
++            painter.setPen( QPen( self.color_theme, line_width, Qt.PenStyle.SolidLine, Qt.PenCapStyle.SquareCap, Qt.PenJoinStyle.MiterJoin ) )
++            painter.setBrush( QtCore.Qt.BrushStyle.NoBrush )
+             painter.setClipPath( circle_01 )
+             painter.drawLine( int( px ), int( py ), int( self.w2 ), int( self.h2 ) )
+         else:
+@@ -404,7 +404,7 @@
+             )
+         painter.setClipPath( mask )
+         # Black Circle
+-        painter.setPen( QtCore.Qt.NoPen )
++        painter.setPen( QtCore.Qt.PenStyle.NoPen )
+         painter.setBrush( QBrush( QColor( "#000000" ) ) )
+         painter.drawEllipse( 
+             int( self.ex - size ),
+@@ -413,7 +413,7 @@
+             int( size2 ),
+             )
+         # White Circle
+-        painter.setPen( QtCore.Qt.NoPen )
++        painter.setPen( QtCore.Qt.PenStyle.NoPen )
+         painter.setBrush( QBrush( QColor( "#ffffff" ) ) )
+         painter.drawEllipse( 
+             int( self.ex - size + w1 ),
