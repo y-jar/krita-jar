@@ -1,1 +1,1 @@
-my krita stuff; brush, plugins, etc
+my krita stuff; brush, plugins, etcq
